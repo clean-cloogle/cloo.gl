@@ -2,3 +2,14 @@
 	order allow,deny
 	deny from all
 </Files>
+
+<Files Dockerfile>
+	order allow,deny
+	deny from all
+</Files>
+
+RewriteEngine On
+RewriteCond %{REQUEST_URI} ^/e/
+RewriteRule ^e/(.+) /?type=cloogle&key=$1 [R]
+RewriteCond %{REQUEST_URI} !^/(e/.*$|$)
+RewriteRule ^(.+) /?type=regular&key=$1 [R]

@@ -1,33 +1,54 @@
 # cloo.gl url shortener
+You should read *soon* as: not implemented yet.
+You should read *yet* as: to be discussed.
 
-## How to setup:
-Copy all these files to some apache directory. Note that you have to enable
-`mod_rewrite` to have the full experience. Also the `sqlite3` library for `php`
-has to be available. The `Dockerfile` included can serve as a ready to use
-solution but is not working yet.
+## How to setup
+### Manual setup
+- Install `apache2` `php` and `php-sqlite`
+- Enable the `mod_rewrite` apache module
+- Configure `apache` to serve this directory
 
-## API calls:
-### GET
-- A GET without variables will forward the user to `cloogle.org`
-- A GET request with a key will forward the user to the url associated with the
-  key if available.
+### Docker setup
+Just run(soon):
+```
+docker build -t cloo.gl .
+docker run -v "$PWD":/var/www/html -p 80:80 cloo.gl
+```
 
-### POST
-POST-variable `type` is required. When the request is successfull it will echo
-the shortened url.
+## How to use
+### `GET` request
+#### No variables and no url
+The user will be redirected to `https://cloogle.org`
 
-#### `type=regular`
-Regular url shortening service. Required arguments:
-- token
+#### No variables but just a key
+- `/e/####`
 
-	Authentication token, this service is not for everyone. If you want to use it
-	please contact one of the cloogle developers.
-- url
+	Will redirect to `/?type=cloogle&key=####`
+- `/####`
 
-	The url to be shortened
+	Will redirect to `/?type=regular&key=####`
+
+#### `type` and `key` variables
+- `type=cloogle`
+
+	The user will be redirected to the address associated with `key`. This is
+	always a `cloogle.org` link.
+- `type=regular`
+
+	The user will be redirected to the address associated with `key`. This is
+	can be any link. Note that not everyone can create such links it requires an
+	authentication token(at least soon).
+
+### `POST` request
+All requests will print the url. When an error occurs a different `HTTP` code
+will be returned(soon).
 
 #### `type=cloogle`
-Cloogle url shortening service. Required arguments:
-- url
+Creates a shortened url for the `url` `POST` variable which is a  cloogle
+query. This should only be called from the cloogle frontend and is available
+for everyone
 
-	The url to be shortened
+#### `type=regular`
+Creates a shortened url for the `url` `POST` variable if and only when the
+`token` `POST` variable is accepted(soon). Not everyone can create `cloo.gl`
+shortened urls(yet).

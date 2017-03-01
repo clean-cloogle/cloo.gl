@@ -4,7 +4,7 @@
 Copy all these files to some apache directory. Note that you have to enable
 `mod_rewrite` to have the full experience. Also the `sqlite3` library for `php`
 has to be available. The `Dockerfile` included can serve as a ready to use
-solution.
+solution but is not working yet.
 
 ## API calls:
 ### GET

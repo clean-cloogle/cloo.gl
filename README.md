@@ -41,7 +41,7 @@ The user will be redirected to `https://cloogle.org`
 
 ### `POST` request
 All requests will print the url. When an error occurs a different `HTTP` code
-will be returned(soon).
+will be returned.
 
 #### `type=cloogle`
 Creates a shortened url for the `url` `POST` variable which is a  cloogle

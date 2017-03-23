@@ -4,6 +4,11 @@ ini_set('display_errors', 1);
 error_reporting(-1);
 define("DBFILE", "db/db.sqlite");
 
+$http_origin = $_SERVER['HTTP_ORIGIN'];
+if($http_origin === "https://cloogle.org" || $http_origin == "http://localhost" || $http_origin === "http://cloogle.org"){
+	    header("Access-Control-Allow-Origin: $http_origin");
+}
+
 # Open handle
 if(!$db = new SQLite3(DBFILE)){
 	die();

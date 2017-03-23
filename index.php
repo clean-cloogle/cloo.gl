@@ -20,6 +20,7 @@ function quit($msg){
 	if(!is_null($db)){
 		$db->close();
 	}
+	http_response_code(400);
 	exit;
 }
 
@@ -28,20 +29,29 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 	$url = 'https://cloogle.org';
 	if(isset($_GET['key']) && isset($_GET['type'])){
 		if($_GET['type'] === 'regular'){
-			$stmt = $db->prepare("SELECT url FROM regular WHERE rowid=:id");
-			$stmt->bindValue(':id', intval(base64_decode($_GET['key'])), SQLITE3_INTEGER);
-			$res = $stmt->execute();
-			if($arr = $res->fetchArray()){
-				$url = $arr[0];
-				$stmt->close();
-			} else {
-				quit("No url with that key");
-			}
+			$dbname = "regular";
+			$prefix = "";
 		} else if($_GET['type'] === 'cloogle'){
-			quit("Not yet supported");
+			$dbname = "cloogle";
+			$prefix = "https://cloogle.org/#";
+		} else {
+			quit("Incorrect type");
 		}
+		$stmt = $db->prepare("SELECT url FROM $dbname WHERE rowid=:id");
+		$stmt->bindValue(':id', intval(base64_decode($_GET['key'])), SQLITE3_INTEGER);
+		if(($res = $stmt->execute()) === FALSE){
+			quit("Select query went wrong");
+		}
+		if($arr = $res->fetchArray()){
+			$url = $arr[0];
+			$stmt->close();
+		} else {
+			quit("No url with key={$_GET['key']}");
+		}
+		header("Location: $prefix$url");
+	} else {
+		quit("Not all variables set");
 	}
-	header("Location: $url");
 # Api call to generate a new link
 } else if ($_SERVER['REQUEST_METHOD'] === 'POST'){
 	if(!isset($_POST['type'])){
@@ -62,19 +72,21 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 		quit("Incorrect type");
 	}
 	
-	$stmt = $db->prepare("INSERT INTO regular (url) VALUES (:url)");
-	
 	if($_POST['type'] === 'cloogle'){
-		echo "Not implemented yet...\n";
+		$dbname = "cloogle";
 		$mod="e/";
-	}
-	
-	if($_POST['type'] === 'regular'){
-		$stmt->bindParam(':url', $_POST['url'], SQLITE3_TEXT);
+	} else if($_POST['type'] === 'regular'){
+		$dbname = "regular";
+		if(preg_match('#^https?://#i', $url) === 0) {
+			$_POST['url'] = "http://{$_POST['url']}";
+		}
 		$mod="";
 	}
-	
-	$stmt->execute();
+	$stmt = $db->prepare("INSERT INTO $dbname (url) VALUES (:url)");
+	$stmt->bindParam(':url', $_POST['url'], SQLITE3_TEXT);
+	if($stmt->execute() === FALSE){
+		quit("Insert query went wrong");
+	}
 	echo "https://cloo.gl/" . $mod . base64_encode($db->lastInsertRowID()) . "\n";
 	$stmt->close();
 } else {

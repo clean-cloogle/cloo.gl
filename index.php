@@ -43,7 +43,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 			$prefix = "";
 		} else if($_GET['type'] === 'cloogle'){
 			$dbname = "cloogle";
-			$prefix = "https://cloogle.org/#";
+			$prefix = "https://cloogle.org/";
 		} else {
 			quit("Incorrect type");
 		}

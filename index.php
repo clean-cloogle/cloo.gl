@@ -4,6 +4,7 @@ ini_set('display_errors', 1);
 error_reporting(-1);
 define("DBFILE", "db/db.sqlite");
 
+
 if(isset($_SERVER['HTTP_ORIGIN'])){
 	$http_origin = $_SERVER['HTTP_ORIGIN'];
 	if($http_origin === "https://cloogle.org" ||
@@ -57,10 +58,8 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 		} else {
 			quit("No url with key={$_GET['key']}");
 		}
-		header("Location: $prefix$url");
-	} else {
-		quit("Not all variables set");
 	}
+	header("Location: $prefix$url");
 # Api call to generate a new link
 } else if ($_SERVER['REQUEST_METHOD'] === 'POST'){
 	if(!isset($_POST['type'])){

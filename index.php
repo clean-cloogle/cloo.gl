@@ -9,7 +9,9 @@ if(isset($_SERVER['HTTP_ORIGIN'])){
 	$http_origin = $_SERVER['HTTP_ORIGIN'];
 	if($http_origin === "https://cloogle.org" ||
 			$http_origin == "http://localhost" ||
-			$http_origin === "http://cloogle.org"){
+			$http_origin === "http://cloogle.org" ||
+			$http_origin === "http://www2.cloogle.org" ||
+			$http_origin === "https://www2.cloogle.org"){
 		header("Access-Control-Allow-Origin: $http_origin");
 	}
 }

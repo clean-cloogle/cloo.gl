@@ -16,6 +16,10 @@ docker run -v "$PWD":/var/www/html -p 80:80 cloo.gl
 ```
 
 ## How to use
+### Helper scripts
+The `contrib` directory contains some helper scripts to use cloo.gl
+functionality from different programs.
+
 ### `GET` request
 #### No variables and no url
 The user will be redirected to `https://cloogle.org`

@@ -4,11 +4,11 @@ ini_set('display_errors', 1);
 error_reporting(-1);
 define("DBFILE", "db/db.sqlite");
 
-
+# This is needed to run the scripts as an AJAX request from javascript
 if(isset($_SERVER['HTTP_ORIGIN'])){
 	$http_origin = $_SERVER['HTTP_ORIGIN'];
 	if($http_origin === "https://cloogle.org" ||
-			$http_origin == "http://localhost" ||
+			$http_origin === "http://localhost" ||
 			$http_origin === "http://cloogle.org" ||
 			$http_origin === "http://www2.cloogle.org" ||
 			$http_origin === "https://www2.cloogle.org"){
@@ -17,8 +17,11 @@ if(isset($_SERVER['HTTP_ORIGIN'])){
 }
 
 # Open handle
-if(!$db = new SQLite3(DBFILE)){
-	die();
+try {
+	$db = new SQLite3(DBFILE);
+} catch (Exception $e){
+	echo "Failed to open database at " . DBFILE . "\n";
+	exit;
 }
 	
 # Init the database

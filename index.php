@@ -2,6 +2,7 @@
 ini_set('display_startup_errors', 1);
 ini_set('display_errors', 1);
 error_reporting(-1);
+
 define("DBFILE", "db/db.sqlite");
 
 # This is needed to run the scripts as an AJAX request from javascript

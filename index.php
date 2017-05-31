@@ -43,10 +43,10 @@ function quit($msg){
 # Lookup or just a redirect to cloogle.org
 if($_SERVER['REQUEST_METHOD'] === 'GET'){
 	$url = 'https://cloogle.org';
+	$prefix = "";
 	if(isset($_GET['key']) && isset($_GET['type'])){
 		if($_GET['type'] === 'regular'){
 			$dbname = "regular";
-			$prefix = "";
 		} else if($_GET['type'] === 'cloogle'){
 			$dbname = "cloogle";
 			$prefix = "https://cloogle.org/";

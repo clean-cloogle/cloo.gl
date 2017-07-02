@@ -8,13 +8,8 @@ include_once 'config.php' ;
 # This is needed to run the scripts as an AJAX request from javascript
 if(isset($_SERVER['HTTP_ORIGIN'])){
 	$http_origin = $_SERVER['HTTP_ORIGIN'];
-	if($http_origin === "https://cloogle.org" ||
-			$http_origin === "http://localhost" ||
-			$http_origin === "http://cloogle.org" ||
-			$http_origin === "http://www2.cloogle.org" ||
-			$http_origin === "https://www2.cloogle.org"){
+	if(is_allowed_origin($http_origin))
 		header("Access-Control-Allow-Origin: $http_origin");
-	}
 }
 
 $db = open_db();
@@ -104,7 +99,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 	if($stmt->execute() === FALSE){
 		quit("Insert query went wrong");
 	}
-	echo "https://cloo.gl/" . $mod . base64_encode($db->lastInsertRowID()) . "\n";
+	echo "https://" . WEBSITENAME . "/" . $mod . base64_encode($db->lastInsertRowID()) . "\n";
 	$stmt->close();
 } else {
 	quit("Unsupported request method");

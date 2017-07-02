@@ -106,7 +106,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 		$mod="e/";
 	} else if($_POST['type'] === 'regular'){
 		$dbname = "regular";
-		if(preg_match('#^https?://#i', $_POST['url']) === 0) {
+		if(preg_match('#^[a-zA-Z+.-]+:/?/?#i', $_POST['url']) === 0) {
 			$_POST['url'] = "http://{$_POST['url']}";
 		}
 		$mod="";

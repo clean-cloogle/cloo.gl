@@ -3,6 +3,16 @@
 	deny from all
 </Files>
 
+<Files config.php>
+	order allow,deny
+	deny from all
+</Files>
+
+<Files init.php>
+	order allow,deny
+	deny from all
+</Files>
+
 <Files Dockerfile>
 	order allow,deny
 	deny from all

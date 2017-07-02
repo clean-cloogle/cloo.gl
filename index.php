@@ -3,7 +3,7 @@ ini_set('display_startup_errors', 1);
 ini_set('display_errors', 1);
 error_reporting(-1);
 
-define("DBFILE", "db/db.sqlite");
+include_once 'config.php' ;
 
 # This is needed to run the scripts as an AJAX request from javascript
 if(isset($_SERVER['HTTP_ORIGIN'])){
@@ -17,19 +17,7 @@ if(isset($_SERVER['HTTP_ORIGIN'])){
 	}
 }
 
-# Open handle
-try {
-	$db = new SQLite3(DBFILE);
-} catch (Exception $e){
-	echo "Failed to open database at " . DBFILE . "\n";
-	exit;
-}
-	
-# Init the database
-$db->query("CREATE TABLE IF NOT EXISTS cloogle(url TEXT)");
-$db->query("CREATE TABLE IF NOT EXISTS regular(url TEXT)");
-$db->query("CREATE TABLE IF NOT EXISTS access(token TEXT)");
-$db->query("CREATE TABLE IF NOT EXISTS log(id INTEGER, date TEXT, iscloogle INTEGER)");
+$db = open_db();
 
 function quit($msg){
 	global $db;
@@ -111,7 +99,7 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 		}
 		$mod="";
 	}
-	$stmt = $db->prepare("INSERT INTO $dbname (url) VALUES (:url)");
+	$stmt = $db->prepare("INSERT INTO $dbname (url, date) VALUES (:url, DATETIME('now', 'localtime'))");
 	$stmt->bindParam(':url', $_POST['url'], SQLITE3_TEXT);
 	if($stmt->execute() === FALSE){
 		quit("Insert query went wrong");

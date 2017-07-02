@@ -7,6 +7,8 @@ You should read *yet* as: to be discussed.
 - Install `apache2` `php` and `php-sqlite`
 - Enable the `mod_rewrite` apache module
 - Configure `apache` to serve this directory
+- Run the `init.php` script to initialize the database. This also serves as an
+  update script for older versions.
 
 ### Docker setup
 Just run(soon):
@@ -56,3 +58,8 @@ for everyone
 Creates a shortened url for the `url` `POST` variable if and only when the
 `token` `POST` variable is accepted(soon). Not everyone can create `cloo.gl`
 shortened urls(yet).
+
+## Changelog
+- 0.3: Added dates for the keys.
+- 0.2: Added logging for urls.
+- 0.1: Initial version.

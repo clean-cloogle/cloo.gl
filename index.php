@@ -29,6 +29,7 @@ try {
 $db->query("CREATE TABLE IF NOT EXISTS cloogle(url TEXT)");
 $db->query("CREATE TABLE IF NOT EXISTS regular(url TEXT)");
 $db->query("CREATE TABLE IF NOT EXISTS access(token TEXT)");
+$db->query("CREATE TABLE IF NOT EXISTS log(id INTEGER, date TEXT, iscloogle INTEGER)");
 
 function quit($msg){
 	global $db;
@@ -47,19 +48,33 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 	if(isset($_GET['key']) && isset($_GET['type'])){
 		if($_GET['type'] === 'regular'){
 			$dbname = "regular";
+			$iscloogle = 0;
 		} else if($_GET['type'] === 'cloogle'){
 			$dbname = "cloogle";
+			$iscloogle = 1;
 			$prefix = "https://cloogle.org/";
 		} else {
 			quit("Incorrect type");
 		}
-		$stmt = $db->prepare("SELECT url FROM $dbname WHERE rowid=:id");
+		$stmt = $db->prepare("SELECT rowid, url FROM $dbname WHERE rowid=:id");
 		$stmt->bindValue(':id', intval(base64_decode($_GET['key'])), SQLITE3_INTEGER);
 		if(($res = $stmt->execute()) === FALSE){
 			quit("Select query went wrong");
 		}
 		if($arr = $res->fetchArray()){
-			$url = $arr[0];
+			$urlid = intval($arr[0]);
+			$url = $arr[1];
+			$stmt->close();
+
+			//Insert into log table
+			$stmt = $db->prepare("
+				INSERT INTO log (id, date, iscloogle)
+				VALUES (:id, DATETIME('now', 'localtime'), :iscloogle)");
+			$stmt->bindValue(':id', $urlid, SQLITE3_INTEGER);
+			$stmt->bindValue(':iscloogle', $iscloogle, SQLITE3_INTEGER);
+			if(($res = $stmt->execute()) === FALSE){
+				quit("Select query went wrong");
+			}
 			$stmt->close();
 		} else {
 			quit("No url with key={$_GET['key']}");

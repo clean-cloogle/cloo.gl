@@ -5,6 +5,25 @@ error_reporting(-1);
 
 include_once 'config.php' ;
 
+function prepare($db, $query, $maxtries = 10, $currenttry = 0)
+{
+	if($stmt = $db->prepare($query)){
+		return $stmt;
+	} else if($maxtries > $currenttry){
+		quit("Database appears to be locked constantly...");
+	} else {
+		return prepare($db, $query, $maxtries, $currenttry+1);
+	}
+}
+
+function execute($stmt, $msg)
+{
+	if(($res = $stmt->execute()) === FALSE){
+		quit("Error in query: $msg");
+	}
+	return $res;
+}
+
 # This is needed to run the scripts as an AJAX request from javascript
 if(isset($_SERVER['HTTP_ORIGIN'])){
 	$http_origin = $_SERVER['HTTP_ORIGIN'];
@@ -39,25 +58,21 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 		} else {
 			quit("Incorrect type");
 		}
-		$stmt = $db->prepare("SELECT rowid, url FROM $dbname WHERE rowid=:id");
+		$stmt = prepare($db, "SELECT rowid, url FROM $dbname WHERE rowid=:id");
 		$stmt->bindValue(':id', intval(base64_decode($_GET['key'])), SQLITE3_INTEGER);
-		if(($res = $stmt->execute()) === FALSE){
-			quit("Select query went wrong");
-		}
+		$res = execute($stmt, "Select");
 		if($arr = $res->fetchArray()){
 			$urlid = intval($arr[0]);
 			$url = $arr[1];
 			$stmt->close();
 
 			//Insert into log table
-			$stmt = $db->prepare("
+			$stmt = prepare($db, "
 				INSERT INTO log (id, date, iscloogle)
 				VALUES (:id, DATETIME('now', 'localtime'), :iscloogle)");
 			$stmt->bindValue(':id', $urlid, SQLITE3_INTEGER);
 			$stmt->bindValue(':iscloogle', $iscloogle, SQLITE3_INTEGER);
-			if(($res = $stmt->execute()) === FALSE){
-				quit("Select query went wrong");
-			}
+			$res = execute($stmt, "Select");
 			$stmt->close();
 		} else {
 			quit("No url with key={$_GET['key']}");
@@ -72,13 +87,11 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 	
 	switch($_POST['type']){
 	case 'regular':
-		if(!isset($_POST['token'])){
+		if(!isset($_POST['token']))
 			quit("Authentication token required");
-		}
 	case 'cloogle':
-		if(!isset($_POST['url'])){
+		if(!isset($_POST['url']))
 			quit("url argument missing");
-		}
 		break;
 	default:
 		quit("Incorrect type");
@@ -94,11 +107,9 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 		}
 		$mod="";
 	}
-	$stmt = $db->prepare("INSERT INTO $dbname (url, date) VALUES (:url, DATETIME('now', 'localtime'))");
+	$stmt = prepare($db, "INSERT INTO $dbname (url, date) VALUES (:url, DATETIME('now', 'localtime'))");
 	$stmt->bindParam(':url', $_POST['url'], SQLITE3_TEXT);
-	if($stmt->execute() === FALSE){
-		quit("Insert query went wrong");
-	}
+	execute($stmt, "Insert");
 	echo "https://" . WEBSITENAME . "/" . $mod . base64_encode($db->lastInsertRowID()) . "\n";
 	$stmt->close();
 } else {

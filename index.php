@@ -12,6 +12,8 @@ function prepare($db, $query, $maxtries = 10, $currenttry = 0)
 	} else if($maxtries > $currenttry){
 		quit("Database appears to be locked constantly...");
 	} else {
+		//Wait 100ms
+		usleep(1000*100);
 		return prepare($db, $query, $maxtries, $currenttry+1);
 	}
 }

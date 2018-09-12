@@ -10,6 +10,10 @@ You should read *yet* as: to be discussed.
 - Run the `init.php` script to initialize the database. This also serves as an
   update script for older versions.
 
+If you also want paste support:
+- Install `fiche` (https://github.com/solusipse/fiche)
+- Make sure `fiche` runs and open port 9999
+
 ### Docker setup
 Just run(soon):
 ```
@@ -30,6 +34,9 @@ The user will be redirected to `https://cloogle.org`
 - `/e/####`
 
 	Will redirect to `/?type=cloogle&key=####`
+- `/p/####`
+
+	Will redirect to `/?type=paste&key=####`
 - `/####`
 
 	Will redirect to `/?type=regular&key=####`
@@ -39,6 +46,9 @@ The user will be redirected to `https://cloogle.org`
 
 	The user will be redirected to the address associated with `key`. This is
 	always a `cloogle.org` link.
+- `type=paste`
+
+	The pasted file (using `fiche`) will be shown to the user.
 - `type=regular`
 
 	The user will be redirected to the address associated with `key`. This is
@@ -60,6 +70,7 @@ Creates a shortened url for the `url` `POST` variable if and only when the
 shortened urls(yet).
 
 ## Changelog
+- 0.4: Added `fiche` support.
 - 0.3: Added dates for the keys.
 - 0.2: Added logging for urls.
 - 0.1: Initial version.

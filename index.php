@@ -50,12 +50,12 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 	$url = 'https://cloogle.org';
 	$prefix = "";
 	if(isset($_GET['key']) && isset($_GET['type'])){
-		if(PASTES !== "" && $_GET['type'] === 'paste'){
+		if($_GET['type'] === 'paste'){
 			//No one should have slugs bigger than 128
 			$safe_key = preg_replace(SLUG_SYMBOLS, "", substr($_GET['key'], 0, 128));
 			header('Content-Type: text/plain');
 			header('Content-Disposition: inline; filename="' . $safe_key . '.txt"');
-			$fp = PASTES . '/' . $safe_key . '/index.txt';
+			$fp = './' . PASTES . '/' . $safe_key . '/index.txt';
 			if(file_exists($fp)){
 				readfile($fp);
 			} else {

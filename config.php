@@ -1,8 +1,11 @@
 <?php
+//The database location
 define("DBFILE", "db/db.sqlite");
+//The domain name
 define("WEBSITENAME", "cloo.gl");
-//Set this to empty if you don't want paste support
+//The folder containing the pastes
 define("PASTES", "pastes");
+//The symbols used by fiche for the slugs
 define("SLUG_SYMBOLS", "[a-z0-9]");
 
 function is_allowed_origin($origin){

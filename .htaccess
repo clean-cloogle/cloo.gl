@@ -21,5 +21,7 @@
 RewriteEngine On
 RewriteCond %{REQUEST_URI} ^/e/
 RewriteRule ^e/(.+) /?type=cloogle&key=$1 [R]
-RewriteCond %{REQUEST_URI} !^/(e/.*$|$)
+RewriteCond %{REQUEST_URI} ^/p/
+RewriteRule ^p/(.+) /?type=paste&key=$1 [R]
+RewriteCond %{REQUEST_URI} !^/([pe]/.*$|$)
 RewriteRule ^(.+) /?type=regular&key=$1 [R]

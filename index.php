@@ -50,34 +50,49 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 	$url = 'https://cloogle.org';
 	$prefix = "";
 	if(isset($_GET['key']) && isset($_GET['type'])){
-		if($_GET['type'] === 'regular'){
-			$dbname = "regular";
-			$iscloogle = 0;
-		} else if($_GET['type'] === 'cloogle'){
-			$dbname = "cloogle";
-			$iscloogle = 1;
-			$prefix = "https://cloogle.org/";
+		if(PASTES !== "" && $_GET['type'] === 'paste'){
+			//No one should have slugs bigger than 128
+			$safe_key = preg_replace(SLUG_SYMBOLS, "", substr($_GET['key'], 0, 128));
+			header('Content-Type: text/plain');
+			header('Content-Disposition: inline; filename="' . $safe_key . '.txt"');
+			$fp = PASTES . '/' . $safe_key . '/index.txt';
+			if(file_exists($fp)){
+				readfile($fp);
+			} else {
+				echo "Unknown paste";
+				http_response_code(404);
+			}
+			exit;
 		} else {
-			quit("Incorrect type");
-		}
-		$stmt = prepare($db, "SELECT rowid, url FROM $dbname WHERE rowid=:id");
-		$stmt->bindValue(':id', intval(base64_decode($_GET['key'])), SQLITE3_INTEGER);
-		$res = execute($stmt, "Select");
-		if($arr = $res->fetchArray()){
-			$urlid = intval($arr[0]);
-			$url = $arr[1];
-			$stmt->close();
-
-			//Insert into log table
-			$stmt = prepare($db, "
-				INSERT INTO log (id, date, iscloogle)
-				VALUES (:id, DATETIME('now', 'localtime'), :iscloogle)");
-			$stmt->bindValue(':id', $urlid, SQLITE3_INTEGER);
-			$stmt->bindValue(':iscloogle', $iscloogle, SQLITE3_INTEGER);
+			if($_GET['type'] === 'regular'){
+				$dbname = "regular";
+				$iscloogle = 0;
+			} else if($_GET['type'] === 'cloogle'){
+				$dbname = "cloogle";
+				$iscloogle = 1;
+				$prefix = "https://cloogle.org/";
+			} else {
+				quit("Incorrect type");
+			}
+			$stmt = prepare($db, "SELECT rowid, url FROM $dbname WHERE rowid=:id");
+			$stmt->bindValue(':id', intval(base64_decode($_GET['key'])), SQLITE3_INTEGER);
 			$res = execute($stmt, "Select");
-			$stmt->close();
-		} else {
-			quit("No url with key={$_GET['key']}");
+			if($arr = $res->fetchArray()){
+				$urlid = intval($arr[0]);
+				$url = $arr[1];
+				$stmt->close();
+	
+				//Insert into log table
+				$stmt = prepare($db, "
+					INSERT INTO log (id, date, iscloogle)
+					VALUES (:id, DATETIME('now', 'localtime'), :iscloogle)");
+				$stmt->bindValue(':id', $urlid, SQLITE3_INTEGER);
+				$stmt->bindValue(':iscloogle', $iscloogle, SQLITE3_INTEGER);
+				$res = execute($stmt, "Select");
+				$stmt->close();
+			} else {
+				quit("No url with key={$_GET['key']}");
+			}
 		}
 	}
 	header("Location: $prefix$url");

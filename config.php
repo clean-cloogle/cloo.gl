@@ -1,6 +1,9 @@
 <?php
 define("DBFILE", "db/db.sqlite");
 define("WEBSITENAME", "cloo.gl");
+//Set this to empty if you don't want paste support
+define("PASTES", "pastes");
+define("SLUG_SYMBOLS", "[a-z0-9]");
 
 function is_allowed_origin($origin){
 	return in_array($origin, array(

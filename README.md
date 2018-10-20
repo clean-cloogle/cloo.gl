@@ -1,4 +1,8 @@
 # cloo.gl url shortener
+
+**This repository has been moved to
+https://gitlab.science.ru.nl/cloogle/cloo-gl.**
+
 You should read *soon* as: not implemented yet.
 You should read *yet* as: to be discussed.
 
